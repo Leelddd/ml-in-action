@@ -1,0 +1,17 @@
+# pycharm config dir
+.idea/
+
+# ignore data source, sample code, yield, model in one dir
+data/
+sample/
+example/
+out/
+model/
+
+# pytest cache
+.pytest_cache/
+
+# jupyter checkpoints
+.ipynb_checkpoints/
+
+tmp/
