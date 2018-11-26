@@ -10,6 +10,7 @@ model/
 
 # pytest cache
 .pytest_cache/
+__pycache__
 
 # jupyter checkpoints
 .ipynb_checkpoints/
