@@ -221,6 +221,32 @@ def viterbi(pi, A, B, o):
         decode[t] = q
     return decode
 
+def my_viterbi(pi, A, B, o):
+    T = len(o)
+    delta = [[0 for i in range(4)] for _ in range(T)]
+    pre = [[0 for i in range(4)] for _ in range(T)]
+
+    for i in range(4):
+        delta[0][i] = pi[i]*B[i][ord(o[0])]
+    for t in range(1, T):
+        for i in range(4):
+            delta[t][i] = delta[t-1][0] * A[0][i]
+            for j in range(1,4):
+                vj = delta[t-1][j] * A[j][i]
+                if delta[t][i] < vj:
+                    delta[t][i] = vj
+                    pre[t][i] = j
+            delta[t][i] *= B[i][ord(o[t])]
+    decode = [-1 for t in range(T)]
+    q = 0
+    for i in range(1, 4):
+        if delta[T-1][i] > delta[T-1][q]:
+            q = i
+    decode[T-1] = q
+    for t in range(T-2, -1, -1):
+        q = pre[t+1][q]
+        decode[t] = q
+    return decode
 
 def segment(sentence, decode):
     N = len(sentence)
@@ -246,5 +272,6 @@ if __name__ == "__main__":
     pi, A, B = load_train()
     with codecs.open('data/26.MyBook.txt', encoding='utf-8') as f:
         data = f.read()
-    decode = viterbi(pi, A, B, data)
+    # decode = viterbi(pi, A, B, data)
+    decode = my_viterbi(pi, A, B, data)
     segment(data, decode)
