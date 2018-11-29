@@ -243,6 +243,7 @@ def segment(sentence, decode):
 
 if __name__ == "__main__":
     pi, A, B = load_train()
+
     f = file(".\\24.mybook.txt")
     data = f.read()[3:].decode('utf-8')
     f.close()
