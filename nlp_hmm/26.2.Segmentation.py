@@ -2,6 +2,7 @@
 # -*- coding:utf-8 -*-
 
 import math
+import codecs
 import matplotlib.pyplot as plt
 import numpy as np
 import codecs
@@ -102,7 +103,7 @@ def bw(pi, A, B, alpha, beta, gamma, ksi, o):
     for i in range(4):
         for k in range(65536):
             if k % 5000 == 0:
-                print i, k
+                print (i, k)
             valid = 0
             for t in range(T):
                 if ord(o[t]) == k:
@@ -116,7 +117,7 @@ def bw(pi, A, B, alpha, beta, gamma, ksi, o):
 
 
 def baum_welch(pi, A, B):
-    f = file(".\\2.txt")
+    f = open(".\\2.txt")
     sentence = f.read()[3:].decode('utf-8') # 跳过文件头
     f.close()
     T = len(sentence)   # 观测序列
@@ -125,7 +126,7 @@ def baum_welch(pi, A, B):
     gamma = [[0 for i in range(4)] for t in range(T)]
     ksi = [[[0 for j in range(4)] for i in range(4)] for t in range(T-1)]
     for time in range(100):
-        print "time:", time
+        print ("time:", time)
         calc_alpha(pi, A, B, sentence, alpha)    # alpha(t,i):给定lamda，在时刻t的状态为i且观测到o(1),o(2)...o(t)的概率
         calc_beta(pi, A, B, sentence, beta)      # beta(t,i)：给定lamda和时刻t的状态i，观测到o(t+1),o(t+2)...oT的概率
         calc_gamma(alpha, beta, gamma)           # gamma(t,i)：给定lamda和O，在时刻t状态位于i的概率
@@ -171,24 +172,24 @@ def train():
 
 
 def load_train():
-    f = file(".\\pi.txt", mode="r")
+    f = open("out/pi.txt", mode="r")
     for line in f:
-        pi = map(float, line.split(' ')[:-1])
+        pi = list(map(float, line.split(' ')[:-1]))
     f.close()
 
-    f = file(".\\A.txt", mode="r")
+    f = open("out/A.txt", mode="r")
     A = [[] for x in range(4)] # 转移矩阵：B/M/E/S
     i = 0
     for line in f:
-        A[i] = map(float, line.split(' ')[:-1])
+        A[i] = list(map(float, line.split(' ')[:-1]))
         i += 1
     f.close()
 
-    f = file(".\\B.txt", mode="r")
+    f = open("out/B.txt", mode="r")
     B = [[] for x in range(4)]
     i = 0
     for line in f:
-        B[i] = map(float, line.split(' ')[:-1])
+        B[i] = list(map(float, line.split(' ')[:-1]))
         i += 1
     f.close()
     return pi, A, B
@@ -231,21 +232,19 @@ def segment(sentence, decode):
                 if decode[j] == 2:
                     break
                 j += 1
-            print sentence[i:j+1], "|",
+            print( sentence[i:j+1], "|",)
             i = j+1
         elif decode[i] == 3 or decode[i] == 2:    # single
-            print sentence[i:i+1], "|",
+            print (sentence[i:i+1], "|",)
             i += 1
         else:
-            print 'Error:', i, decode[i]
+            print ('Error:', i, decode[i])
             i += 1
 
 
 if __name__ == "__main__":
     pi, A, B = load_train()
-
-    f = file(".\\24.mybook.txt")
-    data = f.read()[3:].decode('utf-8')
-    f.close()
+    with codecs.open('data/26.MyBook.txt', encoding='utf-8') as f:
+        data = f.read()
     decode = viterbi(pi, A, B, data)
     segment(data, decode)
