@@ -1,5 +1,4 @@
 import tensorflow as tf
-from tensorflow.examples.tutorials.mnist import input_data
 import A1801210852_liyida_cifar10_forward as mnist_forward
 import os
 import A1801210852_liyida_cifar10_generateds as mnist_generateds

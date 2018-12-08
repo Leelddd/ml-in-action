@@ -154,12 +154,13 @@ def mle():  # 0B/1M/2E/3S
 
     # get tokens
     with codecs.open("data/26.pku_training.utf8", encoding='utf-8') as f:
+    # with codecs.open("data/train_cut.txt", encoding='utf-8') as f:
         data = f.read()
     tokens = data.split('  ')
     # 增加英文词训练集
-    with codecs.open("data/26.Englishword.train", encoding='utf-8') as f:
-        data = f.read()
-    tokens.extend(data.split(' '))
+    # with codecs.open("data/26.Englishword.train", encoding='utf-8') as f:
+    #     data = f.read()
+    # tokens.extend(data.split(' '))
 
     # 开始训练
     last_q = 2

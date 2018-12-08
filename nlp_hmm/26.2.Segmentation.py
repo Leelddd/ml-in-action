@@ -270,8 +270,9 @@ def segment(sentence, decode):
 
 if __name__ == "__main__":
     pi, A, B = load_train()
-    with codecs.open('data/26.MyBook.txt', encoding='utf-8') as f:
+    # with codecs.open('data/26.MyBook.txt', encoding='utf-8') as f:
+    with codecs.open('data/test', encoding='utf-8') as f:
         data = f.read()
-    # decode = viterbi(pi, A, B, data)
-    decode = my_viterbi(pi, A, B, data)
+    decode = viterbi(pi, A, B, data)
+    # decode = my_viterbi(pi, A, B, data)
     segment(data, decode)
