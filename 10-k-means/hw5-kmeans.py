@@ -1,9 +1,11 @@
-from numpy import *
-import pandas as pd
-import numpy as np
-from sklearn.metrics import log_loss
 import matplotlib
+
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+from numpy import *
+from itertools import cycle
 
 
 def load_dataset():
@@ -105,32 +107,46 @@ def biKmeans(dataSet, k, distMeas=distEclud):
     return mat(centList), clusterAssment
 
 
-def draw(index):
-    plt.figure(index)
+def draw(cluster_id, data):
+    print('cluster %d has %d transaction data' % (cluster_id, len(data)))
+    plt.figure(cluster_id)
     x = list(range(52))
-    plt.title('k-means')
-    colors = ['green', 'red', 'skyblue', 'blue', 'yellow']
-    # cnt = 0
-    for i in range(len(dataMat.A)):
-        if myNewAssments.A[i][0] == index:
-            color = colors[int(myNewAssments.A[i][0])]
-            plt.plot(x, dataMat.A[i], color=color)
-        # if cnt > 4:
-        #     break
-        # cnt += 1
-    plt.legend()
+    plt.title('k-means-%d' % cluster_id)
+    # cycol = cycle('bgrcmykw')
+    for i in range(len(data)):
+        # plt.plot(x, data[i], c=next(cycol))
+        plt.plot(x, data[i], c='blue')
+    # plt.legend()
+    plt.savefig('out/%d.png' % cluster_id)
+
+
+def test(data, filepath: str):
+    d = loadtxt(filepath)
+
+    cluster_cnt = int(max(d[:, 0])) + 1
+
+    for i in range(cluster_cnt):
+        cnt = len(data[d[:, 0] == i])
+        if cnt > 0:
+            draw(i, data[d[:, 0] == i])
+
+
+def train(dataMat, method='basic'):
+    if method == 'basic':
+        centList, myNewAssments = kMeans(dataMat, 100)
+    else:
+        centList, myNewAssments = biKmeans(dataMat, 100)
+
+    m = mean([distEclud(dataMat[i], dataMat[j]) for i in range(800) for j in range(800)])
+    print('average distance before cluster is %f' % m)
+    print('useing %s method, average distance after cluster is %f' % (method, mean(myNewAssments.A[:, 1])))
+
+    savetxt('out/%s_cluster.txt' % method, myNewAssments.A)
 
 
 if __name__ == '__main__':
-    dataMat = mat(load_dataset())
-    centList, myNewAssments = biKmeans(dataMat, 50)
-    # centList, myNewAssments = kMeans(dataMat, 50)
-    print(mean(myNewAssments.A[:, 1]))
-
-    # m = mean([distEclud(dataMat[i], dataMat[j]) for i in range(800) for j in range(800)])
-    # print(m)
-
-    savetxt('cluster.txt', myNewAssments.A)
-    # myNewAssments = matrix(loadtxt('cluster.txt'))
-    for i in range(5):
-        draw(i)
+    data = load_dataset()
+    # train(np.mat(data))
+    # train(np.mat(data), 'binary')
+    # test(data, 'out/basic_cluster.txt')
+    test(data, 'out/binary_cluster.txt')
