@@ -7,6 +7,7 @@ sample/
 example/
 out/
 model/
+MNIST_model/
 
 # pytest cache
 .pytest_cache/
