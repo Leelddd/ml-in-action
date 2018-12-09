@@ -1,13 +1,27 @@
 import numpy as np
 import pandas as pd
 from scipy import stats
+import matplotlib.pyplot as plt
 
 
-def load(fileName, delim='\t'):
-    fr = open(fileName)
-    stringArr = [line.strip().split(delim) for line in fr.readlines()]
-    datArr = [map(float, line) for line in stringArr]
-    return np.mat(datArr)
+def load():
+    data = np.loadtxt('data/imports-85.data', delimiter=',', dtype=np.unicode)
+    l = list(range(2, 9)) + [14, 15, 17]
+    data[data == '?'] = 0
+    for i in l:
+        data[:, i], uniques = pd.factorize(data[:, i])
+    data = data.astype(np.float)
+    data = minmax(data)
+    return data
+
+
+def minmax(data):
+    n = np.shape(data)[1]
+    for i in range(n):
+        mmin = min(data[:, i])
+        mmax = max(data[:, i])
+        data[:, i] = (data[:, i] - mmin) / (mmax - mmin)
+    return data
 
 
 def pca(dataMat, topNfeat=9999999):
@@ -23,25 +37,18 @@ def pca(dataMat, topNfeat=9999999):
     print('len:', topNfeat)
     # print('max var:', eig_vector[:,eigValInd[-1]])
     print('max var:', eig_val[0])
+    # print(sum(eig_val))
+    # print(eig_val/sum(eig_val))
     return lowDDataMat, reconMat
 
 
-def main():
-    data = np.loadtxt('data/imports-85.data', delimiter=',', dtype=np.unicode)
-    l = list(range(2, 9)) + [14, 15, 17]
-    data[data == '?'] = 0
-    for i in l:
-        data[:, i], uniques = pd.factorize(data[:, i])
-    data = data.astype(np.float)
-    # for i in range(np.shape(data)[1]):
-    #     data[:, i] = stats.zscore(data[:, i])
-    # print(data.size)
-    d = 25
-    while d > 3:
-        data, re = pca(data, d)
-        d -= 1
-    # d, re = pca(data, 25)
-    # print(len(d))
+def replaceNanWithMean():
+    datMat = np.mat(load())
+    numFeat = np.shape(datMat)[1]
+    for i in range(numFeat):
+        meanVal = np.mean(datMat[np.nonzero(~np.isnan(datMat[:, i].A))[0], i])  # values that are not NaN (a number)
+        datMat[np.nonzero(np.isnan(datMat[:, i].A))[0], i] = meanVal  # set NaN values to mean
+    return datMat
 
 
 def tp():
@@ -49,9 +56,6 @@ def tp():
     d, r = pca(arr, 1)
     print(d)
 
-
-if __name__ == '__main__':
-    # main()
-    # tp()
-    data = load('data/misc.txt')
-    print(data)
+# if __name__ == '__main__':
+# main()
+# tp()
